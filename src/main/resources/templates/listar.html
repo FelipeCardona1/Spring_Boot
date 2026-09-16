@@ -1,15 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${titulo}"> </title>
+    <title th:text="${titulo}"></title>
 </head>
 <body>
     <h1 th:text="${titulo}"></h1>
-    <h2 th:text="${'El ID es: '+cliente.id+ ' el nombre es: '+cliente.nombre}"></h2>
-    <p th:text="${cliente.nombre+ ' ' +cliente.apellido}"></p>
-    <p th:text="${cliente.email}"></p>
-    <p th:text="${cliente.createAt}"></p>
+
+    <a th:href="@{/Cliente/formulario}">Crear cliente</a>
+
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Acciones</th>
+        </tr>
+
+        <tr th:each="cliente : ${clientes}">
+            <td th:text="${cliente.id}"></td>
+            <td th:text="${cliente.nombre}"></td>
+            <td th:text="${cliente.apellido}"></td>
+            <td th:text="${cliente.email}"></td>
+            <td>
+                <a th:href="@{/Cliente/formulario/{id}(id=${cliente.id})}">
+                    Editar
+                </a>
+
+                <a th:href="@{/Cliente/eliminar/{id}(id=${cliente.id})}">
+                    Eliminar
+                </a>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

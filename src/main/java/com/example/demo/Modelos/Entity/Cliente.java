@@ -2,12 +2,23 @@ package com.example.demo.Modelos.Entity;
 
 import java.util.Date;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
+@Entity 
+@Table (name = "clientes")
 public class Cliente {
     
 
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
     private String Nombre,Apellido,Email;
+    @Column (name = "create_at")
     private Date createAt;
 
     public Cliente(Long id, String nombre, String apellido, String email, Date createAt) {
@@ -16,6 +27,8 @@ public class Cliente {
         Apellido = apellido;
         Email = email;
         this.createAt = createAt;
+    }
+    public Cliente() {
     }
     public Long getId() {
         return Id;

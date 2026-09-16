@@ -18,7 +18,7 @@ public class RepoClienteDAO implements InterfaceClienteDAO {
     @Transactional (readOnly = true)
     @Override
     public List<Cliente> findAll() {
-        return em.createQuery("from Cliente c").getResultList();
+        return em.createQuery("from Cliente").getResultList();
     }
 
     @Transactional 
