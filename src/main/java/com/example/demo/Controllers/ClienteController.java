@@ -15,7 +15,7 @@ import com.example.demo.Modelos.Entity.Cliente;
 import com.example.demo.Modelos.DAO.InterfaceClienteDAO;
 
 @Controller
-@RequestMapping("/Cliente")
+@RequestMapping({"/Cliente", "/cliente"})
 public class ClienteController {
 
     @Autowired 

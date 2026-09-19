@@ -12,13 +12,13 @@ import com.example.demo.Modelos.DAO.InterfaceProductoDAO;
 import com.example.demo.Modelos.Entity.Producto;
 
 @Controller 
-@RequestMapping ("/producto")
+@RequestMapping({"/producto", "/Producto"})
 public class ProductoController {
 
     @Autowired 
     private InterfaceProductoDAO productoDAO;
 
-    @GetMapping({"/stock"})
+    @GetMapping({"/stock", "/listar"})
     public String listar(Model model) {
         model.addAttribute("titulo", "Listar Productos");
         model.addAttribute("productos", productoDAO.findAll());
