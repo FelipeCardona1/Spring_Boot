@@ -30,6 +30,10 @@ public class SecurityConfig {
                                                 .requestMatchers("/h2-console/**").permitAll()
                                                 // El panel y las operaciones de cliente son solo para ADMIN
                                                 .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
+                                                // Permite al cliente acceder a su propio perfil.
+                                                .requestMatchers("/cliente/perfil", "/cliente/perfil/**")
+                                                .hasRole("CLIENTE")
+                                                // Las demás rutas de clientes siguen siendo solo para ADMIN.
                                                 .requestMatchers("/Cliente/**", "/cliente/**").hasRole("ADMIN")
                                                 // Las vistas y operaciones Administrativas de producto son solo para
                                                 // ADMIN

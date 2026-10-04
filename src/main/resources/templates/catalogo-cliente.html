@@ -19,6 +19,7 @@
             <div class="navbar-nav ms-auto">
                 <!-- El cliente solo consulta el catálogo -->
                 <a class="nav-link active" th:href="@{/catalogo}">Productos</a>
+                <a class="nav-link" th:href="@{/cliente/perfil}">Mi perfil</a>
 
                 <!-- El formulario permite que Spring Security cierre la sesión -->
                 <form th:action="@{/logout}" method="post" class="d-flex ms-lg-3">

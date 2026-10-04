@@ -18,7 +18,6 @@ import com.example.demo.Modelos.Entity.Cliente;
 import com.example.demo.Modelos.Entity.EstadoCuenta;
 import com.example.demo.Modelos.Entity.Rol;
 import com.example.demo.Modelos.Entity.Usuario;
-import com.example.demo.Modelos.Entity.Cliente;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -140,6 +139,101 @@ public class UsuarioService implements UserDetailsService { // Hace que spring s
         nuevo.setFechaCreacion(new Date());
 
         usuarioDAO.save(nuevo);
+    }
+
+    /**
+     * Crea una cuenta aprobada para un Cliente que ya existe en la base de datos.
+     * Se usa para preparar las cuentas de prueba de los registros de import.sql.
+     */
+    @Transactional
+    public void crearCuentaInicialCliente(Cliente clienteExistente, String passwordPlano) {
+        String email = clienteExistente.getEmail().trim().toLowerCase();
+
+        // Si ya existe una cuenta con este correo, no volvemos a crearla.
+        if (usuarioDAO.findByEmail(email).isPresent()) {
+            return;
+        }
+
+        // Recuperamos el perfil dentro de esta transacción.
+        Cliente perfil = clienteDAO.findOne(clienteExistente.getId());
+
+        if (perfil == null) {
+            throw new IllegalArgumentException("No se encontró el perfil del cliente.");
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNombre(perfil.getNombre());
+        usuario.setApellido(perfil.getApellido());
+        usuario.setEmail(email);
+
+        // La contraseña queda cifrada igual que en el registro normal.
+        usuario.setPassword(passwordEncoder.encode(passwordPlano));
+
+        usuario.setRol(Rol.CLIENTE);
+        usuario.setEstado(EstadoCuenta.APROBADO);
+        usuario.setFechaCreacion(new Date());
+
+        // Vincula la cuenta con el perfil existente; no crea otro Cliente.
+        usuario.setCliente(perfil);
+
+        usuarioDAO.save(usuario);
+    }
+
+    /**
+     * Actualiza los datos del Cliente asociado a la cuenta autenticada.
+     * También sincroniza nombre, apellido y correo en Usuario.
+     */
+    @Transactional
+    public void actualizarPerfilCliente(
+            String emailAutenticado,
+            String nombreNuevo,
+            String apellidoNuevo,
+            String emailNuevo) {
+
+        // Normalizamos los correos para evitar diferencias por espacios o mayúsculas.
+        String emailActual = emailAutenticado.trim().toLowerCase(); // trim espacio Lower mayusculas a minusculas
+        String nuevoEmail = emailNuevo.trim().toLowerCase();
+
+        // Buscamos la cuenta usando la identidad obtenida de la sesión.
+        Usuario usuario = usuarioDAO.findByEmail(emailActual)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No se encontró la cuenta autenticada."));
+
+        // Solo una cuenta aprobada con rol CLIENTE puede modificar este perfil.
+        if (usuario.getRol() != Rol.CLIENTE
+                || usuario.getEstado() != EstadoCuenta.APROBADO) {
+            throw new IllegalArgumentException(
+                    "La cuenta no puede editar un perfil de cliente.");
+        }
+
+        Cliente cliente = usuario.getCliente();
+
+        if (cliente == null) {
+            throw new IllegalArgumentException(
+                    "La cuenta no tiene un perfil de cliente asociado.");
+        }
+
+        // No permitimos usar el correo de otra cuenta.
+        var cuentaConCorreoNuevo = usuarioDAO.findByEmail(nuevoEmail);
+        if (cuentaConCorreoNuevo.isPresent()
+                && !cuentaConCorreoNuevo.get().getId().equals(usuario.getId())) {
+            throw new IllegalArgumentException(
+                    "Ese correo ya está registrado por otra cuenta.");
+        }
+
+        // Actualizamos el perfil que verá el administrador en la tabla Cliente.
+        cliente.setNombre(nombreNuevo.trim());
+        cliente.setApellido(apellidoNuevo.trim());
+        cliente.setEmail(nuevoEmail);
+
+        // Sincronizamos los datos de Usuario, cuyo correo se usa para iniciar sesión.
+        usuario.setNombre(nombreNuevo.trim());
+        usuario.setApellido(apellidoNuevo.trim());
+        usuario.setEmail(nuevoEmail);
+
+        // Ambos cambios quedan dentro de la misma transacción.
+        clienteDAO.save(cliente);
+        usuarioDAO.save(usuario);
     }
 
     /**

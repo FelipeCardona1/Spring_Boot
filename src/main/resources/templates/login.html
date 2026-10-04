@@ -32,6 +32,10 @@
                     role="alert">
                     <span>Has cerrado sesión correctamente.</span>
                 </div>
+                <!-- Se muestra cuando el cliente cambió su correo y debe iniciar sesión otra vez. -->
+                <div th:if="${param.correoActualizado}" class="alert alert-success text-center" role="alert">
+                    Correo actualizado. Inicia sesión con tu nuevo correo y tu contraseña habitual.
+                </div>
 
                 <div class="form-panel mx-auto w-100">
                     <form th:action="@{/login}" method="post">
