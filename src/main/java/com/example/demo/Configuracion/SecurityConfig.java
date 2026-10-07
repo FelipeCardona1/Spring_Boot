@@ -48,6 +48,8 @@ public class SecurityConfig {
 
                                                 // El catalogo de solo lectura es para CLIENTE
                                                 .requestMatchers("/catalogo").hasRole("CLIENTE")
+                                                // Solo CLIENTE puede confirmar compras o consultar facturas.
+                                                .requestMatchers("/compra/**").hasRole("CLIENTE")
                                                 .anyRequest().authenticated())
                                 .formLogin(form -> form
                                                 .loginPage("/login")

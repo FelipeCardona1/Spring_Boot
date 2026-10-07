@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Catálogo | Gestión</title>
 
-    <!-- Estilos que ya usan las otras vistas del proyecto -->
+    <!-- Estilos que usan las demás vistas del proyecto -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
@@ -14,14 +14,14 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark app-navbar">
         <div class="container">
+            <!-- La marca lleva de nuevo al catálogo -->
             <a class="navbar-brand fw-bold" th:href="@{/catalogo}">Gestión</a>
 
             <div class="navbar-nav ms-auto">
-                <!-- El cliente solo consulta el catálogo -->
                 <a class="nav-link active" th:href="@{/catalogo}">Productos</a>
                 <a class="nav-link" th:href="@{/cliente/perfil}">Mi perfil</a>
 
-                <!-- El formulario permite que Spring Security cierre la sesión -->
+                <!-- Spring Security procesa el cierre de sesión por POST -->
                 <form th:action="@{/logout}" method="post" class="d-flex ms-lg-3">
                     <button type="submit" class="btn btn-outline-light btn-sm">
                         Cerrar sesión
@@ -34,36 +34,60 @@
     <main class="container py-5">
         <h1 class="h2 mb-4">Catálogo de productos</h1>
 
-        <div class="table-panel">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Descripción</th>
-                            <th>Precio</th>
-                            <th>Disponibles</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Thymeleaf crea una fila por cada producto enviado por el controlador -->
-                        <tr th:each="producto : ${productos}">
-                            <td class="fw-semibold" th:text="${producto.nombre}"></td>
-                            <td th:text="${producto.descripcion}"></td>
-                            <td th:text="${producto.precio}"></td>
-                            <td th:text="${producto.stock}"></td>
-                        </tr>
-
-                        <!-- Este mensaje aparece cuando la lista está vacía -->
-                        <tr th:if="${#lists.isEmpty(productos)}">
-                            <td colspan="4" class="empty-state">
-                                No hay productos disponibles.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <!-- Muestra errores enviados por CompraController, como stock insuficiente -->
+        <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}">
         </div>
+
+        <!-- Envía todos los productos disponibles y las cantidades elegidas -->
+        <form th:action="@{/compra/confirmar}" method="post">
+            <div class="table-panel">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Descripción</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Cantidad a comprar</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr th:each="producto : ${productos}">
+                                <td class="fw-semibold" th:text="${producto.nombre}"></td>
+                                <td th:text="${producto.descripcion}"></td>
+                                <td th:text="${producto.precio}"></td>
+                                <td th:text="${producto.stock}"></td>
+                                <td>
+                                    <!-- Solo permite seleccionar productos con stock positivo -->
+                                    <div th:if="${producto.stock > 0}">
+                                        <input type="hidden" name="productoIds" th:value="${producto.id}">
+
+                                        <input class="form-control" type="number" name="cantidades" min="0"
+                                            th:max="${producto.stock}" value="0">
+                                    </div>
+
+                                    <span th:if="${producto.stock <= 0}" class="text-secondary">
+                                        Agotado
+                                    </span>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${#lists.isEmpty(productos)}">
+                                <td class="empty-state" colspan="5">
+                                    No hay productos disponibles.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <button class="btn btn-primary mt-3" type="submit">
+                Confirmar compra
+            </button>
+        </form>
     </main>
 </body>
 
