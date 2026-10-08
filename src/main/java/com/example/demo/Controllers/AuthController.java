@@ -58,7 +58,7 @@ public class AuthController {
 
         try {
             usuarioService.registrar(
-                    nombre.trim(), // trim elimina espacios en blanco
+                    nombre.trim(),
                     apellido.trim(),
                     email.trim().toLowerCase(Locale.ROOT),
                     password);

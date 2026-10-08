@@ -19,7 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration // funciona con relacion al bean
 @EnableWebSecurity // Activa y habilita el soporte de seguridad werb en la app
 public class SecurityConfig {
-        @Bean
+        @Bean // objeto que Spring crea y administra para que otras partes de la aplicación
+              // puedan usarlo.
         public SecurityFilterChain securityFilterChain(HttpSecurity http)
                         throws Exception {
 
@@ -65,6 +66,10 @@ public class SecurityConfig {
                                                  * Obtiene la lista de roles/permisos del usuario. Stream permite
                                                  * recorrer como un flujo de datos
                                                  * anymatch Verifica si algún rol del usuario coincide con "ROLE_ADMIN"
+                                                 * Request recibe ls solicitud HTTP
+                                                 * response la respuesta HTTP que aplicacion enviará al navegador
+                                                 * authentication es el objeto que contiene la informacion del usuario
+                                                 * autenticado...
                                                  */
                                                 .successHandler((request, response, authentication) -> {
 

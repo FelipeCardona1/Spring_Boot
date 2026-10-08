@@ -8,7 +8,7 @@ import com.example.demo.Modelos.Entity.Usuario;
 
 public interface InterfaceUsuarioDAO {
 
-    /** Guarda o actualiza un usuario (igual que en los otros DAO) */
+    /** Guarda o actualiza un usuario */
     void save(Usuario usuario);
 
     /** Busca un usuario por su ID */

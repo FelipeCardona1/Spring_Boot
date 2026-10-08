@@ -42,6 +42,11 @@ public class RepoClienteDAO implements InterfaceClienteDAO {
     public void delete(Long id) {
         Cliente cliente = findOne(id);
         if (cliente != null) {
+            // Desvincular primero cualquier Usuario que tenga asignado este cliente
+            em.createQuery("UPDATE Usuario u SET u.cliente = null WHERE u.cliente.id = :clienteId")
+                    .setParameter("clienteId", id)
+                    .executeUpdate();
+
             em.remove(cliente);
         }
     }

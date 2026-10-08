@@ -15,9 +15,7 @@ import jakarta.persistence.PersistenceContext;
 
 /**
  * Implementación concreta de InterfaceUsuarioDAO.
- * Usa EntityManager directamente — mismo enfoque que RepoClienteDAO y
- * RepoProductoDAO.
- *
+ * 
  * @Repository: marca esta clase como componente de acceso a datos.
  *              Spring la detecta automáticamente y la registra en el contexto.
  *
@@ -42,9 +40,9 @@ public class RepoUsuarioDAO implements InterfaceUsuarioDAO {
     @Override
     public void save(Usuario usuario) {
         if (usuario.getId() != null && usuario.getId() > 0) {
-            em.merge(usuario);
+            em.merge(usuario); // actualizar
         } else {
-            em.persist(usuario);
+            em.persist(usuario); // guardar
         }
     }
 

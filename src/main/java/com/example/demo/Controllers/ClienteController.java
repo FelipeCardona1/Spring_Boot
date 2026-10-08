@@ -59,10 +59,15 @@ public class ClienteController {
     }
 
     @GetMapping("/eliminar/{id}")
-    public String eliminar(@PathVariable Long id) {
-        clienteDAO.delete(id);
+    public String eliminar(@PathVariable Long id, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        try {
+            clienteDAO.delete(id);
+            redirectAttributes.addFlashAttribute("mensaje", "Cliente eliminado correctamente.");
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute("error", "No se puede eliminar el cliente porque tiene compras registradas u otros datos asociados.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al intentar eliminar el cliente: " + e.getMessage());
+        }
         return "redirect:/Cliente/listar";
     }
-
-    
 }
